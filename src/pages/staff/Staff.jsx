@@ -1,45 +1,40 @@
 import { useState } from 'react';
-import { Typography, Card, Button, Space, Popconfirm, message, Tag } from 'antd';
+import { Typography, Card, Button, Space, Popconfirm, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { GenericTable } from '../../components/common/GenericTable';
 import { StaffModal } from './StaffModal';
 import { staffService } from '../../services/staffService';
+import { useCreateStaff, useUpdateStaff, useDeleteStaff, STAFF_QUERY_KEY } from '../../hooks/queries/useStaff';
 
 const { Title } = Typography;
 
 const Staff = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const refreshTable = () => {
-    setRefreshTrigger(prev => prev + 1);
+  const { mutate: createStaff } = useCreateStaff();
+  const { mutate: updateStaff } = useUpdateStaff();
+  const { mutate: deleteStaff } = useDeleteStaff();
+
+  const handleDelete = (id) => {
+    deleteStaff(id);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await staffService.delete(id);
-      message.success('Specialist deleted successfully');
-      refreshTable();
-    } catch (error) {
-      message.error('Failed to delete specialist');
-    }
-  };
-
-  const handleCreateOrUpdate = async (values) => {
-    try {
-      if (editingStaff) {
-        await staffService.update(editingStaff.id, values);
-        message.success('Specialist updated successfully');
-      } else {
-        await staffService.create(values);
-        message.success('Specialist created successfully');
-      }
-      setModalOpen(false);
-      setEditingStaff(null);
-      refreshTable(); 
-    } catch (error) {
-      message.error(editingStaff ? 'Failed to update specialist' : 'Failed to create specialist');
+  const handleCreateOrUpdate = (values) => {
+    if (editingStaff) {
+      updateStaff({ id: editingStaff.id, values }, {
+        onSuccess: () => {
+          setModalOpen(false);
+          setEditingStaff(null);
+        }
+      });
+    } else {
+      createStaff(values, {
+        onSuccess: () => {
+          setModalOpen(false);
+          setEditingStaff(null);
+        }
+      });
     }
   };
 
@@ -125,7 +120,7 @@ const Staff = () => {
         <GenericTable
           columns={columns}
           fetchData={staffService.getAll}
-          refreshTrigger={refreshTrigger}
+          queryKeyPrefix={STAFF_QUERY_KEY}
           searchPlaceholder="Search specialists by name or specialization..."
         />
       </Card>

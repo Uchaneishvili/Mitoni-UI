@@ -1,61 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Table, Input } from 'antd';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import debounce from 'lodash.debounce';
 
 const { Search } = Input;
 
 export const GenericTable = ({
   columns = [],
   fetchData,
-  refreshTrigger = 0,
   rowKey = 'id',
   searchPlaceholder = 'Search...',
+  queryKeyPrefix = 'genericTable',
   ...restProps
 }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
+  const [debouncedSearchText, setDebouncedSearchText] = useState('');
   const [sortField, setSortField] = useState();
   const [sortOrder, setSortOrder] = useState();
   const [tableFilters, setTableFilters] = useState({});
 
+  const debouncedSetSearch = useMemo(
+    () => debounce((value) => {
+      setDebouncedSearchText(value);
+      setCurrentPage(1); 
+    }, 500),
+    []
+  );
+
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const params = {
-          page: currentPage,
-          limit: pageSize,
-          search: searchText,
-          sortBy: sortField,
-          sortOrder: sortOrder,
-        };
-        
-        if (tableFilters) {
-          Object.keys(tableFilters).forEach(key => {
-            if (tableFilters[key] !== null && tableFilters[key] !== undefined) {
-              params[key] = tableFilters[key].join(',');
-            }
-          });
-        }
-
-        const result = await fetchData(params);
-        setData(result?.data || []);
-        setTotal(result?.total || 0);
-      } catch (error) {
-        console.error('Table fetch error:', error);
-      } finally {
-        setLoading(false);
-      }
+    return () => {
+      debouncedSetSearch.cancel();
     };
+  }, [debouncedSetSearch]);
 
-    if (fetchData) {
-      loadData();
+  const queryParams = useMemo(() => {
+    const params = {
+      page: currentPage,
+      limit: pageSize,
+      search: debouncedSearchText,
+      sortBy: sortField,
+      sortOrder: sortOrder,
+    };
+    
+    if (tableFilters) {
+      Object.keys(tableFilters).forEach(key => {
+        if (tableFilters[key] !== null && tableFilters[key] !== undefined) {
+          params[key] = tableFilters[key].join(',');
+        }
+      });
     }
-  }, [fetchData, currentPage, pageSize, searchText, sortField, sortOrder, tableFilters, refreshTrigger]);
+    return params;
+  }, [currentPage, pageSize, debouncedSearchText, sortField, sortOrder, tableFilters]);
+
+  const { data: result, isLoading, isError, error } = useQuery({
+    queryKey: [queryKeyPrefix, queryParams],
+    queryFn: () => fetchData(queryParams),
+    enabled: !!fetchData,
+    placeholderData: keepPreviousData,
+  });
+
+  const tableData = result?.data || [];
+  const totalItems = result?.total || 0;
+
+  if (isError) {
+    console.error('Table fetch error:', error);
+  }
 
   const handleTableChange = (paginationConfig, filters, sorter) => {
     setCurrentPage(paginationConfig.current);
@@ -73,9 +84,17 @@ export const GenericTable = ({
     }
   };
 
-  const handleSearch = (value) => {
-    setCurrentPage(1);
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
     setSearchText(value);
+    debouncedSetSearch(value);
+  };
+
+  const handleSearchSubmit = (value) => {
+    setSearchText(value);
+    setDebouncedSearchText(value);
+    setCurrentPage(1);
+    debouncedSetSearch.cancel(); 
   };
 
   return (
@@ -85,27 +104,22 @@ export const GenericTable = ({
           placeholder={searchPlaceholder}
           allowClear
           value={searchText}
-          onSearch={handleSearch}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-            if (e.target.value === '') {
-              handleSearch('');
-            }
-          }}
+          onSearch={handleSearchSubmit}
+          onChange={handleSearchInputChange}
           style={{ width: 300 }}
         />
       </div>
       <Table
         columns={columns}
-        dataSource={data}
-        loading={loading}
+        dataSource={tableData}
+        loading={isLoading}
         rowKey={rowKey}
         onChange={handleTableChange}
         scroll={{ x: 'max-content' }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: total,
+          total: totalItems,
           showSizeChanger: true,
           showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
         }}
