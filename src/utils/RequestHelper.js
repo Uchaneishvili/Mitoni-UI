@@ -19,7 +19,22 @@ export default class RequestHelper {
 
       this._client.interceptors.response.use(
         (response) => {
-          return response.data;
+          const res = response.data;
+
+          if (res?.success && res?.data?.data) {
+            return { data: res.data.data, total: res.data.meta?.total || res.data.data.length };
+          }
+          if (Array.isArray(res)) {
+            return { data: res, total: res.length };
+          }
+          if (res && Array.isArray(res.data)) {
+            return { data: res.data, total: res.total || res.data.length };
+          }
+          if (res && Array.isArray(res.items)) {
+            return { data: res.items, total: res.total || res.items.length };
+          }
+          
+          return res; 
         },
         (error) => {
           console.error('API Error:', error?.response?.data || error.message);

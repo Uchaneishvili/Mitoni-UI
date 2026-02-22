@@ -3,9 +3,9 @@ import MainLayout from '../layouts/MainLayout';
 import Dashboard from '../pages/Dashboard';
 import { APP_ROUTES } from '../config/navigation';
 
-import Staff from '../pages/Staff';
-import Services from '../pages/Services';
-import Reservations from '../pages/Reservations';
+import Staff from '../pages/staff/Staff';
+import Services from '../pages/Services/Services';
+import Reservations from '../pages/Reservations/Reservations';
 
 const AppRoutes = () => {
   return (
