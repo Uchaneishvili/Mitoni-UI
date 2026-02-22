@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Typography, Card, Button, Space, Popconfirm, message, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { GenericTable } from '../../components/common/GenericTable';
@@ -8,50 +8,19 @@ import { staffService } from '../../services/staffService';
 const { Title } = Typography;
 
 const Staff = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [searchText, setSearchText] = useState('');
-
   const [modalOpen, setModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const fetchStaff = async (page = currentPage, limit = pageSize, search = searchText) => {
-    setLoading(true);
-    try {
-      const result = await staffService.getAll({ page, limit, search });
-      
-      setData(result?.data || []);
-      setTotal(result?.total || 0);
-    } catch (error) {
-      console.error(error);
-      message.error('Failed to fetch staff data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStaff(currentPage, pageSize, searchText);
-  }, [currentPage, pageSize, searchText]);
-
-  const handleTableChange = (paginationConfig) => {
-    setCurrentPage(paginationConfig.current);
-    setPageSize(paginationConfig.pageSize);
-  };
-
-  const handleSearch = (value) => {
-    setCurrentPage(1);
-    setSearchText(value);
+  const refreshTable = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const handleDelete = async (id) => {
     try {
       await staffService.delete(id);
       message.success('Specialist deleted successfully');
-      fetchStaff(); 
+      refreshTable();
     } catch (error) {
       message.error('Failed to delete specialist');
     }
@@ -68,7 +37,7 @@ const Staff = () => {
       }
       setModalOpen(false);
       setEditingStaff(null);
-      fetchStaff(); 
+      refreshTable(); 
     } catch (error) {
       message.error(editingStaff ? 'Failed to update specialist' : 'Failed to create specialist');
     }
@@ -101,6 +70,10 @@ const Staff = () => {
       title: 'Status',
       dataIndex: 'isActive',
       key: 'isActive',
+      filters: [
+        { text: 'Active', value: true },
+        { text: 'Inactive', value: false },
+      ],
       render: (isActive) => (
         <Tag color={isActive ? 'success' : 'error'}>
           {isActive ? 'Active' : 'Inactive'}
@@ -151,16 +124,8 @@ const Staff = () => {
       <Card bordered={false}>
         <GenericTable
           columns={columns}
-          dataSource={data}
-          loading={loading}
-          onChange={handleTableChange}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: total,
-            showSizeChanger: true,
-          }}
-          onSearch={handleSearch}
+          fetchData={staffService.getAll}
+          refreshTrigger={refreshTrigger}
           searchPlaceholder="Search specialists by name or specialization..."
         />
       </Card>
