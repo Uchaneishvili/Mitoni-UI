@@ -5,7 +5,6 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 
-
 export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
   RESERVATIONS: '/reservations',

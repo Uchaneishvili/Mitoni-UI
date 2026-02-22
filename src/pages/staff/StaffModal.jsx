@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Modal, Form, Input, Switch } from 'antd';
 
 export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
