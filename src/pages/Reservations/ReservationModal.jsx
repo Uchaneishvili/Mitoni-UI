@@ -46,6 +46,21 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
     }
   };
 
+  const disabledDate = (current) => {
+    const isPast = current && current < dayjs().startOf('day');
+    return isPast;
+  };
+
+  const disabledTime = () => {
+    const disabledHours = [];
+    for (let i = 0; i < 24; i++) {
+       if (i < 10 || i >= 20) {
+         disabledHours.push(i);
+       }
+    }
+    return { disabledHours: () => disabledHours };
+  };
+
   return (
     <Modal
       title={initialValues ? 'Edit Reservation' : 'New Reservation'}
@@ -78,7 +93,14 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
           <Input placeholder="+123456789" />
         </Form.Item>
         <Form.Item name="startTime" label="Reservation Time" rules={[{ required: true }]}>
-          <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: '100%' }} />
+          <DatePicker 
+            showTime 
+            format="YYYY-MM-DD HH:mm" 
+            style={{ width: '100%' }}
+            disabledDate={disabledDate}
+            disabledTime={disabledTime}
+            minuteStep={30}
+          />
         </Form.Item>
         <Form.Item name="notes" label="Notes">
           <Input.TextArea rows={3} placeholder="Any special requests or details..." />

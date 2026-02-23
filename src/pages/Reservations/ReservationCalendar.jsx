@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Calendar, dayjsLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useQuery } from '@tanstack/react-query';
-import { Card, Spin, Space, Typography } from 'antd';
+import { Card, Spin, Space, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import { reservationService } from '../../services/reservationService';
 import { staffService } from '../../services/staffService';
@@ -79,6 +79,13 @@ const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
   };
 
   const handleSelectSlot = ({ start, end, resourceId }) => {
+    const selectedDay = dayjs(start);
+
+    if (selectedDay < dayjs().startOf('day')) {
+      message.warning('Reservations cannot be made in the past.');
+      return;
+    }
+
     if (onDateSelect) {
       onDateSelect({
         startTime: start.toISOString(),
@@ -155,9 +162,9 @@ const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
             step={30}
             timeslots={2}
             defaultView="day"
-            views={['day', 'work_week', 'month']}
-            min={new Date(0, 0, 0, 8, 0, 0)} 
-            max={new Date(0, 0, 0, 22, 0, 0)} 
+            views={['day', 'week', 'month']}
+            min={new Date(0, 0, 0, 10, 0, 0)} 
+            max={new Date(0, 0, 0, 20, 0, 0)} 
             selectable
             onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
