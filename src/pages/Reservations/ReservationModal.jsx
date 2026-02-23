@@ -64,6 +64,8 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
     return { disabledHours: () => disabledHours };
   };
 
+  const selectedServiceId = Form.useWatch('serviceId', form);
+
   return (
     <Modal
       title={initialValues ? 'Edit Reservation' : 'New Reservation'}
@@ -79,6 +81,13 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
             fetchData={staffService.getAll}
             queryKeyPrefix={'staff'}
             renderOption={(s) => `${s.firstName} ${s.lastName}`}
+            filterData={(staff) => {
+              if (!staff.isActive) return false;
+              if (selectedServiceId) {
+                return staff.services?.some(s => s.serviceId === selectedServiceId);
+              }
+              return true;
+            }}
           />
         </Form.Item>
         <Form.Item name="serviceId" label="Service" rules={[{ required: true, message: 'Please select a service' }]}>
@@ -87,6 +96,9 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
             fetchData={servicesService.getAll}
             queryKeyPrefix={'services'}
             labelKey="name"
+            onChange={() => {
+              form.setFieldsValue({ staffId: undefined });
+            }}
           />
         </Form.Item>
         <Form.Item name="customerName" label="Customer Name" rules={[{ required: true }]}>

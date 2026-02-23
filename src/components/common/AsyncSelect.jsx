@@ -10,6 +10,7 @@ export const AsyncSelect = ({
   labelKey = 'name',
   valueKey = 'id',
   renderOption,
+  filterData,
   ...props
 }) => {
   const [searchText, setSearchText] = useState('');
@@ -32,7 +33,10 @@ export const AsyncSelect = ({
     enabled: !!fetchData,
   });
 
-  const options = data?.data || [];
+  let options = data?.data || [];
+  if (filterData) {
+    options = options.filter(filterData);
+  }
 
   return (
     <Select

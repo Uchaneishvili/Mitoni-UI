@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Modal, Form, Input, Switch } from 'antd';
 import { handleBackendError } from '../../utils/errorHandler';
+import { AsyncSelect } from '../../components/common/AsyncSelect';
+import { servicesService } from '../../services/servicesService';
 
 export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
@@ -8,10 +10,13 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
   useEffect(() => {
     if (open) {
       if (initialValues) {
-        form.setFieldsValue(initialValues);
+        form.setFieldsValue({
+          ...initialValues,
+          services: initialValues.services?.map(s => s.serviceId) || []
+        });
       } else {
         form.resetFields();
-        form.setFieldsValue({ isActive: true });
+        form.setFieldsValue({ isActive: true, services: [] });
       }
     }
   }, [open, initialValues, form]);
@@ -63,6 +68,19 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
           rules={[{ required: true, message: 'Please input a specialization!' }]}
         >
           <Input placeholder="e.g. Dermatologist" />
+        </Form.Item>
+        <Form.Item
+          name="services"
+          label="Provided Services"
+        >
+          <AsyncSelect 
+            placeholder="Search and select services..."
+            fetchData={servicesService.getAll}
+            queryKeyPrefix={'services'}
+            labelKey="name"
+            mode="multiple"
+            allowClear
+          />
         </Form.Item>
         <Form.Item
           name="isActive"
