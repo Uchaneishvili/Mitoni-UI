@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button, Space, Tag, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Typography, Card, Button, Space, Tag, Popconfirm, Segmented } from 'antd';
+import { PlusOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, CalendarOutlined, TableOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { GenericTable } from '../../components/common/GenericTable';
@@ -8,6 +8,7 @@ import { reservationService } from '../../services/reservationService';
 import { servicesService } from '../../services/servicesService';
 import { useUpdateReservationStatus, RESERVATION_QUERY_KEY } from '../../hooks/queries/useReservations';
 import ReservationModal from './ReservationModal';
+import ReservationCalendar from './ReservationCalendar';
 
 const { Title } = Typography;
 
@@ -19,12 +20,12 @@ const statusColors = {
 };
 
 const Reservations = () => {
+  const [viewMode, setViewMode] = useState('calendar'); 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState(null);
   
   const { mutate: updateStatus } = useUpdateReservationStatus();
 
-  // Fetch services to map serviceId to serviceName in the table
   const { data: servicesData } = useQuery({
     queryKey: ['servicesListAll'],
     queryFn: () => servicesService.getAll({ limit: 100 }),
@@ -37,6 +38,11 @@ const Reservations = () => {
 
   const handleStatusChange = (id, newStatus) => {
     updateStatus({ id, status: newStatus });
+  };
+
+  const handleCreateNew = (initialData = null) => {
+    setEditingReservation(initialData);
+    setModalOpen(true);
   };
 
   const columns = [
@@ -120,26 +126,45 @@ const Reservations = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Title level={2} style={{ margin: 0 }}>Reservations</Title>
-        <Button 
-          type="primary" 
-          icon={<PlusOutlined />} 
-          onClick={() => {
-            setEditingReservation(null);
-            setModalOpen(true);
-          }}
-        >
-          New Reservation
-        </Button>
+        <Space>
+          <Segmented
+            options={[
+              { label: 'Calendar', value: 'calendar', icon: <CalendarOutlined /> },
+              { label: 'List', value: 'list', icon: <TableOutlined /> },
+            ]}
+            value={viewMode}
+            onChange={setViewMode}
+          />
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />} 
+            onClick={() => handleCreateNew(null)}
+          >
+            New Reservation
+          </Button>
+        </Space>
       </div>
 
-      <Card bordered={false}>
-        <GenericTable
-          columns={columns}
-          fetchData={reservationService.getAll}
-          queryKeyPrefix={RESERVATION_QUERY_KEY}
-          searchPlaceholder="Search by customer name, phone, or notes..."
+      {viewMode === 'list' ? (
+        <Card bordered={false}>
+          <GenericTable
+            columns={columns}
+            fetchData={reservationService.getAll}
+            queryKeyPrefix={RESERVATION_QUERY_KEY}
+            searchPlaceholder="Search by customer name, phone, or notes..."
+          />
+        </Card>
+      ) : (
+        <ReservationCalendar 
+          onEventClick={(res) => {
+            setEditingReservation(res);
+            setModalOpen(true);
+          }}
+          onDateSelect={(dates) => {
+            handleCreateNew({ startTime: dates.startTime });
+          }}
         />
-      </Card>
+      )}
       
       {modalOpen && (
         <ReservationModal
