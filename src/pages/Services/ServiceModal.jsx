@@ -47,6 +47,7 @@ const ServiceModal = ({ open, initialValues, onCancel }) => {
       open={open}
       onClose={onCancel}
       width={400}
+      destroyOnClose={true}
       placement="right"
       extra={
         <Space>

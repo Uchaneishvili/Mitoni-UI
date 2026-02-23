@@ -9,15 +9,11 @@ import { servicesService } from '../../services/servicesService';
 import { useUpdateReservationStatus, RESERVATION_QUERY_KEY } from '../../hooks/queries/useReservations';
 import ReservationModal from './ReservationModal';
 import ReservationCalendar from './ReservationCalendar';
+import { brandColors, statusTagColors } from '../../constants/theme';
 
 const { Title } = Typography;
 
-const statusColors = {
-  PENDING: 'warning',
-  CONFIRMED: 'processing',
-  COMPLETED: 'success',
-  CANCELLED: 'error',
-};
+const statusColors = statusTagColors;
 
 const Reservations = () => {
   const [viewMode, setViewMode] = useState('calendar'); 
@@ -58,7 +54,7 @@ const Reservations = () => {
       key: 'customer',
       render: (_, record) => (
         <Space>
-          <Avatar style={{ backgroundColor: '#1677ff' }} icon={<UserOutlined />} />
+          <Avatar style={{ backgroundColor: brandColors.primary }} icon={<UserOutlined />} />
           <div>
             <div style={{ fontWeight: 500 }}>{record.customerName}</div>
             <div style={{ fontSize: '12px', color: 'gray' }}>{record.customerPhone}</div>
@@ -82,10 +78,10 @@ const Reservations = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => {
-        if (status === 'PENDING') return <Tag color="warning" style={{ borderRadius: '12px', padding: '0 12px' }} bordered={false}><span className="ant-badge-status-dot ant-badge-status-warning" style={{ marginRight: 6 }}></span>{status}</Tag>;
-        if (status === 'CONFIRMED') return <Tag color="success" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
-        if (status === 'COMPLETED') return <Tag color="default" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
-        return <Tag color="error" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+        if (status === 'PENDING') return <Tag color={statusColors.PENDING} style={{ borderRadius: '12px', padding: '0 12px' }} bordered={false}><span className="ant-badge-status-dot ant-badge-status-warning" style={{ marginRight: 6 }}></span>{status}</Tag>;
+        if (status === 'CONFIRMED') return <Tag color={statusColors.CONFIRMED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+        if (status === 'COMPLETED') return <Tag color={statusColors.COMPLETED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+        return <Tag color={statusColors.CANCELLED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
       },
       filters: [
         { text: 'Pending', value: 'PENDING' },

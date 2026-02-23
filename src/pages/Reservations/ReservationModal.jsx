@@ -6,6 +6,7 @@ import { staffService } from '../../services/staffService';
 import { servicesService } from '../../services/servicesService';
 import { AsyncSelect } from '../../components/common/AsyncSelect';
 import { handleBackendError } from '../../utils/errorHandler';
+import { brandColors } from '../../constants/theme';
 
 const ReservationModal = ({ open, initialValues, onCancel }) => {
   const [form] = Form.useForm();
@@ -79,6 +80,7 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
       open={open}
       onClose={onCancel}
       width={450}
+      destroyOnClose={true}
       placement="right"
       extra={
         <Space>
@@ -91,14 +93,14 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
     >
       {initialValues && (
         <div style={{ marginBottom: 24, padding: '12px', background: '#f5f5f5', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontWeight: 500 }}>Reservation Status: <strong style={{ color: initialValues.status === 'CONFIRMED' ? '#52c41a' : initialValues.status === 'CANCELLED' ? '#ff4d4f' : '#faad14' }}>{initialValues.status}</strong></span>
+          <span style={{ fontWeight: 500 }}>Reservation Status: <strong style={{ color: initialValues.status === 'CONFIRMED' ? brandColors.success : initialValues.status === 'CANCELLED' ? brandColors.error : brandColors.warning }}>{initialValues.status}</strong></span>
           <Space>
             <Popconfirm title="Are you sure you want to cancel this reservation?" onConfirm={() => handleStatusChange('CANCELLED')}>
               <Button danger disabled={initialValues.status === 'CANCELLED'}>Cancel</Button>
             </Popconfirm>
             <Button 
               type="primary" 
-              style={{ backgroundColor: '#52c41a' }} 
+              style={{ backgroundColor: brandColors.success }} 
               onClick={() => handleStatusChange('CONFIRMED')}
               disabled={initialValues.status === 'CONFIRMED'}
             >

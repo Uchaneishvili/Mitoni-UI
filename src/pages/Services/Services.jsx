@@ -5,6 +5,7 @@ import { GenericTable } from '../../components/common/GenericTable';
 import { servicesService } from '../../services/servicesService';
 import { useDeleteService, SERVICES_QUERY_KEY } from '../../hooks/queries/useServices';
 import ServiceModal from './ServiceModal';
+import { brandColors } from '../../constants/theme';
 
 const { Title } = Typography;
 
@@ -37,7 +38,7 @@ const Services = () => {
       dataIndex: 'price',
       key: 'price',
       sorter: true,
-      render: (val) => <span style={{ fontWeight: 500, color: '#1677ff' }}>${Number(val).toFixed(2)}</span>,
+      render: (val) => <span style={{ fontWeight: 500, color: brandColors.primary }}>${Number(val).toFixed(2)}</span>,
     },
     {
       title: 'Status',

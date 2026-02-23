@@ -40,6 +40,7 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
       title={initialValues ? 'Edit Specialist' : 'Add New Specialist'}
       onClose={onCancel}
       width={400}
+      destroyOnClose={true}
       placement="right"
       extra={
         <Space>

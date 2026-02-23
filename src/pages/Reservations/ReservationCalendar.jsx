@@ -8,6 +8,7 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import { reservationService } from '../../services/reservationService';
 import { staffService } from '../../services/staffService';
 import { AsyncSelect } from '../../components/common/AsyncSelect';
+import { statusColors } from '../../constants/theme';
 
 dayjs.extend(updateLocale);
 dayjs.updateLocale('en', {
@@ -16,13 +17,6 @@ dayjs.updateLocale('en', {
 
 const localizer = dayjsLocalizer(dayjs);
 const { Text } = Typography;
-
-const statusColors = {
-  PENDING: '#faad14', 
-  CONFIRMED: '#1677ff', 
-  COMPLETED: '#52c41a',
-  CANCELLED: '#ff4d4f', 
-};
 
 const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
   const [selectedStaffId, setSelectedStaffId] = useState(null);

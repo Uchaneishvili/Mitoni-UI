@@ -8,6 +8,7 @@ import { servicesService } from '../services/servicesService';
 import { reservationService } from '../services/reservationService';
 import { useNavigate } from 'react-router-dom';
 import { APP_ROUTES } from '../config/navigation';
+import { brandColors } from '../constants/theme';
 
 const { Title, Text } = Typography;
 
@@ -54,21 +55,21 @@ const Dashboard = () => {
     {
       title: "Active Reservations",
       value: resData?.total || 0,
-      icon: <CalendarOutlined style={{ color: '#1677ff', fontSize: 24 }} />,
+      icon: <CalendarOutlined style={{ color: brandColors.primary, fontSize: 24 }} />,
       route: APP_ROUTES.RESERVATIONS,
       color: 'rgba(22, 119, 255, 0.1)'
     },
     {
       title: "Total Specialists",
       value: staffData?.total || 0,
-      icon: <TeamOutlined style={{ color: '#52c41a', fontSize: 24 }} />,
+      icon: <TeamOutlined style={{ color: brandColors.success, fontSize: 24 }} />,
       route: APP_ROUTES.STAFF,
       color: 'rgba(82, 196, 26, 0.1)'
     },
     {
       title: "Offered Services",
       value: servicesData?.total || 0,
-      icon: <AppstoreOutlined style={{ color: '#722ed1', fontSize: 24 }} />,
+      icon: <AppstoreOutlined style={{ color: brandColors.purple, fontSize: 24 }} />,
       route: APP_ROUTES.SERVICES,
       color: 'rgba(114, 46, 209, 0.1)'
     }

@@ -5,6 +5,7 @@ import { GenericTable } from '../../components/common/GenericTable';
 import { StaffModal } from './StaffModal';
 import { staffService } from '../../services/staffService';
 import { useCreateStaff, useUpdateStaff, useDeleteStaff, STAFF_QUERY_KEY } from '../../hooks/queries/useStaff';
+import { brandColors } from '../../constants/theme';
 
 const { Title } = Typography;
 
@@ -55,7 +56,7 @@ const Staff = () => {
         return (
           <Space>
             <Avatar 
-              style={{ backgroundColor: '#1677ff', verticalAlign: 'middle' }} 
+              style={{ backgroundColor: brandColors.primary, verticalAlign: 'middle' }} 
               icon={!initials && <UserOutlined />}
             >
               {initials}
