@@ -132,9 +132,9 @@ const Reservations = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: '16px' }}>
         <Title level={2} style={{ margin: 0 }}>Reservations</Title>
-        <Space>
+        <Space wrap>
           <Segmented
             options={[
               { label: 'Calendar', value: 'calendar', icon: <CalendarOutlined /> },

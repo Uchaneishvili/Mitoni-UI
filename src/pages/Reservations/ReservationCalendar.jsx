@@ -125,10 +125,10 @@ const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
   return (
     <Card bordered={false}>
       <div style={{ marginBottom: 16 }}>
-        <Space align="center" size="middle">
-          <Text strong>Filter by Staff:</Text>
+        <Space align="center" size="middle" wrap>
+          <Text strong style={{ whiteSpace: 'nowrap' }}>Filter by Staff:</Text>
           <AsyncSelect 
-            style={{ width: 250 }}
+            style={{ width: '100%', minWidth: 200, maxWidth: 250 }}
             placeholder="All Specialists"
             allowClear
             value={selectedStaffId}

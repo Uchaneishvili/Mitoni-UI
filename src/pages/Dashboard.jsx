@@ -123,7 +123,7 @@ const Dashboard = () => {
                   }}
                   onClick={() => navigate(widget.route)}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
                       <Statistic
                         title={<span style={{ fontSize: '14px', color: '#8c8c8c' }}>{widget.title}</span>}

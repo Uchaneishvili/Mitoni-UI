@@ -102,14 +102,14 @@ export const GenericTable = ({
 
   return (
     <div style={{ width: '100%', overflowX: 'auto' }}>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
         <Search
           placeholder={searchPlaceholder}
           allowClear
           value={searchText}
           onSearch={handleSearchSubmit}
           onChange={handleSearchInputChange}
-          style={{ width: 300 }}
+          style={{ width: '100%', maxWidth: 300 }}
         />
       </div>
       <Table
