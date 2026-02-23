@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button, Space, Tag, Popconfirm, Segmented } from 'antd';
-import { PlusOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, CalendarOutlined, TableOutlined } from '@ant-design/icons';
+import { Typography, Card, Button, Space, Tag, Popconfirm, Segmented, Avatar } from 'antd';
+import { PlusOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, CalendarOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { GenericTable } from '../../components/common/GenericTable';
@@ -57,28 +57,36 @@ const Reservations = () => {
       title: 'Customer',
       key: 'customer',
       render: (_, record) => (
-        <div>
-          <div>{record.customerName}</div>
-          <div style={{ fontSize: '12px', color: 'gray' }}>{record.customerPhone}</div>
-        </div>
+        <Space>
+          <Avatar style={{ backgroundColor: '#1677ff' }} icon={<UserOutlined />} />
+          <div>
+            <div style={{ fontWeight: 500 }}>{record.customerName}</div>
+            <div style={{ fontSize: '12px', color: 'gray' }}>{record.customerPhone}</div>
+          </div>
+        </Space>
       )
     },
     {
       title: 'Staff',
       key: 'staff',
-      render: (_, record) => record.staff ? `${record.staff.firstName} ${record.staff.lastName}` : 'N/A'
+      render: (_, record) => record.staff ? <span style={{ fontWeight: 500 }}>{`${record.staff.firstName} ${record.staff.lastName}`}</span> : <span style={{ color: '#ccc' }}>Unassigned</span>
     },
     {
       title: 'Service',
       dataIndex: 'serviceId',
       key: 'serviceId',
-      render: (serviceId) => getServiceName(serviceId)
+      render: (serviceId) => <span style={{ color: '#595959' }}>{getServiceName(serviceId)}</span>
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => <Tag color={statusColors[status] || 'default'}>{status}</Tag>,
+      render: (status) => {
+        if (status === 'PENDING') return <Tag color="warning" style={{ borderRadius: '12px', padding: '0 12px' }} bordered={false}><span className="ant-badge-status-dot ant-badge-status-warning" style={{ marginRight: 6 }}></span>{status}</Tag>;
+        if (status === 'CONFIRMED') return <Tag color="success" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+        if (status === 'COMPLETED') return <Tag color="default" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+        return <Tag color="error" style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
+      },
       filters: [
         { text: 'Pending', value: 'PENDING' },
         { text: 'Confirmed', value: 'CONFIRMED' },
@@ -146,12 +154,16 @@ const Reservations = () => {
       </div>
 
       {viewMode === 'list' ? (
-        <Card bordered={false}>
+        <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
           <GenericTable
             columns={columns}
             fetchData={reservationService.getAll}
             queryKeyPrefix={RESERVATION_QUERY_KEY}
             searchPlaceholder="Search by customer name, phone, or notes..."
+            size="middle"
+            emptyText="No reservations found."
+            emptyActionText="Create Reservation"
+            onEmptyAction={() => handleCreateNew(null)}
           />
         </Card>
       ) : (

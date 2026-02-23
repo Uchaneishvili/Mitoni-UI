@@ -1,5 +1,5 @@
 import  { useEffect } from 'react';
-import { Modal, Form, Input, DatePicker, Button, Space, Popconfirm } from 'antd';
+import { Drawer, Form, Input, DatePicker, Button, Space, Popconfirm } from 'antd';
 import dayjs from 'dayjs';
 import { useCreateReservation, useUpdateReservation, useUpdateReservationStatus } from '../../hooks/queries/useReservations';
 import { staffService } from '../../services/staffService';
@@ -74,12 +74,20 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
   const selectedServiceId = Form.useWatch('serviceId', form);
 
   return (
-    <Modal
+    <Drawer
       title={initialValues ? 'Edit Reservation' : 'New Reservation'}
       open={open}
-      onOk={handleSubmit}
-      onCancel={onCancel}
-      okText="Save"
+      onClose={onCancel}
+      width={450}
+      placement="right"
+      extra={
+        <Space>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={handleSubmit} type="primary">
+            Save
+          </Button>
+        </Space>
+      }
     >
       {initialValues && (
         <div style={{ marginBottom: 24, padding: '12px', background: '#f5f5f5', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -146,7 +154,7 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
           <Input.TextArea rows={3} placeholder="Any special requests or details..." />
         </Form.Item>
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
 

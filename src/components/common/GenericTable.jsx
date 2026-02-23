@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Table, Input } from 'antd';
+import { Table, Input, Empty, Button } from 'antd';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 
@@ -11,6 +11,9 @@ export const GenericTable = ({
   rowKey = 'id',
   searchPlaceholder = 'Search...',
   queryKeyPrefix = 'genericTable',
+  emptyText = 'No Data Available',
+  emptyActionText,
+  onEmptyAction,
   ...restProps
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,6 +119,20 @@ export const GenericTable = ({
         rowKey={rowKey}
         onChange={handleTableChange}
         scroll={{ x: 'max-content' }}
+        locale={{
+          emptyText: (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={<span>{emptyText}</span>}
+            >
+              {emptyActionText && onEmptyAction && (
+                <Button type="primary" onClick={onEmptyAction}>
+                  {emptyActionText}
+                </Button>
+              )}
+            </Empty>
+          ),
+        }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,

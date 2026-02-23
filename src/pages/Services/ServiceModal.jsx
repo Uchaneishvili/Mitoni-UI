@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Modal, Form, Input, InputNumber, Switch } from 'antd';
+import { Drawer, Form, Input, InputNumber, Switch, Button, Space } from 'antd';
 import { useCreateService, useUpdateService } from '../../hooks/queries/useServices';
 import { handleBackendError } from '../../utils/errorHandler';
 
@@ -42,12 +42,20 @@ const ServiceModal = ({ open, initialValues, onCancel }) => {
   };
 
   return (
-    <Modal
+    <Drawer
       title={initialValues ? 'Edit Service' : 'Add New Service'}
       open={open}
-      onOk={handleSubmit}
-      onCancel={onCancel}
-      okText="Save"
+      onClose={onCancel}
+      width={400}
+      placement="right"
+      extra={
+        <Space>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={handleSubmit} type="primary">
+            {initialValues ? 'Update' : 'Create'}
+          </Button>
+        </Space>
+      }
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -84,7 +92,7 @@ const ServiceModal = ({ open, initialValues, onCancel }) => {
           </Form.Item>
         )}
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
 

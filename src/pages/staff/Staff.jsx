@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Typography, Card, Button, Space, Popconfirm, Tag } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Typography, Card, Button, Space, Popconfirm, Tag, Avatar } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined } from '@ant-design/icons';
 import { GenericTable } from '../../components/common/GenericTable';
 import { StaffModal } from './StaffModal';
 import { staffService } from '../../services/staffService';
@@ -47,21 +47,29 @@ const Staff = () => {
 
   const columns = [
     {
-      title: 'First Name',
-      dataIndex: 'firstName',
-      key: 'firstName',
-      sorter: true,
-    },
-    {
-      title: 'Last Name',
-      dataIndex: 'lastName',
-      key: 'lastName',
-      sorter: true,
+      title: 'Specialist',
+      key: 'name',
+      sorter: (a, b) => a.firstName.localeCompare(b.firstName),
+      render: (_, record) => {
+        const initials = `${record.firstName?.[0] || ''}${record.lastName?.[0] || ''}`.toUpperCase();
+        return (
+          <Space>
+            <Avatar 
+              style={{ backgroundColor: '#1677ff', verticalAlign: 'middle' }} 
+              icon={!initials && <UserOutlined />}
+            >
+              {initials}
+            </Avatar>
+            <span style={{ fontWeight: 500 }}>{record.firstName} {record.lastName}</span>
+          </Space>
+        );
+      }
     },
     {
       title: 'Specialization',
       dataIndex: 'specialization',
       key: 'specialization',
+      render: (text) => <span style={{ color: '#595959' }}>{text}</span>
     },
     {
       title: 'Status',
@@ -72,7 +80,7 @@ const Staff = () => {
         { text: 'Inactive', value: false },
       ],
       render: (isActive) => (
-        <Tag color={isActive ? 'success' : 'error'}>
+        <Tag color={isActive ? 'success' : 'error'} style={{ borderRadius: '12px', padding: '0 12px' }}>
           {isActive ? 'Active' : 'Inactive'}
         </Tag>
       ),
@@ -85,6 +93,7 @@ const Staff = () => {
           <Button 
             type="primary" 
             ghost 
+            shape="circle"
             icon={<EditOutlined />} 
             onClick={() => openEditModal(record)}
           />
@@ -95,7 +104,7 @@ const Staff = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Button danger icon={<DeleteOutlined />} />
+            <Button danger shape="circle" icon={<DeleteOutlined />} disabled={!record.isActive} />
           </Popconfirm>
         </Space>
       ),
@@ -118,12 +127,19 @@ const Staff = () => {
         </Button>
       </div>
       
-      <Card bordered={false}>
+      <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
         <GenericTable
           columns={columns}
           fetchData={staffService.getAll}
           queryKeyPrefix={STAFF_QUERY_KEY}
           searchPlaceholder="Search specialists by name or specialization..."
+          size="middle"
+          emptyText="No specialists found."
+          emptyActionText="Add New Specialist"
+          onEmptyAction={() => {
+            setEditingStaff(null);
+            setModalOpen(true);
+          }}
         />
       </Card>
 

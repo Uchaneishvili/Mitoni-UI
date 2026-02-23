@@ -53,21 +53,21 @@ const Dashboard = () => {
   const widgets = [
     {
       title: "Active Reservations",
-      value: resData?.meta?.total || 0,
+      value: resData?.total || 0,
       icon: <CalendarOutlined style={{ color: '#1677ff', fontSize: 24 }} />,
       route: APP_ROUTES.RESERVATIONS,
       color: 'rgba(22, 119, 255, 0.1)'
     },
     {
       title: "Total Specialists",
-      value: staffData?.meta?.total || 0,
+      value: staffData?.total || 0,
       icon: <TeamOutlined style={{ color: '#52c41a', fontSize: 24 }} />,
       route: APP_ROUTES.STAFF,
       color: 'rgba(82, 196, 26, 0.1)'
     },
     {
       title: "Offered Services",
-      value: servicesData?.meta?.total || 0,
+      value: servicesData?.total || 0,
       icon: <AppstoreOutlined style={{ color: '#722ed1', fontSize: 24 }} />,
       route: APP_ROUTES.SERVICES,
       color: 'rgba(114, 46, 209, 0.1)'

@@ -23,26 +23,28 @@ const Services = () => {
       dataIndex: 'name',
       key: 'name',
       sorter: true,
+      render: (text) => <span style={{ fontWeight: 500 }}>{text}</span>
     },
     {
-      title: 'Duration (Mins)',
+      title: 'Duration',
       dataIndex: 'durationMinutes',
       key: 'durationMinutes',
       sorter: true,
+      render: (val) => <span style={{ color: '#595959' }}>{val} min</span>
     },
     {
-      title: 'Price ($)',
+      title: 'Price',
       dataIndex: 'price',
       key: 'price',
       sorter: true,
-      render: (val) => `$${Number(val).toFixed(2)}`,
+      render: (val) => <span style={{ fontWeight: 500, color: '#1677ff' }}>${Number(val).toFixed(2)}</span>,
     },
     {
       title: 'Status',
       dataIndex: 'isActive',
       key: 'isActive',
       render: (isActive) => (
-        <Tag color={isActive ? 'success' : 'default'}>
+        <Tag color={isActive ? 'success' : 'default'} style={{ borderRadius: '12px', padding: '0 12px' }}>
           {isActive ? 'Active' : 'Inactive'}
         </Tag>
       ),
@@ -59,6 +61,7 @@ const Services = () => {
           <Button
             type="primary"
             ghost
+            shape="circle"
             icon={<EditOutlined />}
             onClick={() => {
               setEditingService(record);
@@ -71,7 +74,7 @@ const Services = () => {
             okText="Yes"
             cancelText="No"
           >
-            <Button danger icon={<DeleteOutlined />} disabled={!record.isActive} />
+            <Button danger shape="circle" icon={<DeleteOutlined />} disabled={!record.isActive} />
           </Popconfirm>
         </Space>
       ),
@@ -94,12 +97,19 @@ const Services = () => {
         </Button>
       </div>
 
-      <Card bordered={false}>
+      <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
         <GenericTable
           columns={columns}
           fetchData={servicesService.getAll}
           queryKeyPrefix={SERVICES_QUERY_KEY}
           searchPlaceholder="Search services by name..."
+          size="middle"
+          emptyText="No services configured."
+          emptyActionText="Create New Service"
+          onEmptyAction={() => {
+            setEditingService(null);
+            setModalOpen(true);
+          }}
         />
       </Card>
 

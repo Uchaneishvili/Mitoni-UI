@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Modal, Form, Input, Switch } from 'antd';
+import { Drawer, Form, Input, Switch, Button, Space } from 'antd';
 import { handleBackendError } from '../../utils/errorHandler';
 import { AsyncSelect } from '../../components/common/AsyncSelect';
 import { servicesService } from '../../services/servicesService';
@@ -21,7 +21,7 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
     }
   }, [open, initialValues, form]);
 
-  const handleOk = () => {
+  const handleSubmit = () => {
     form
       .validateFields()
       .then((values) => {
@@ -35,13 +35,20 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
   };
 
   return (
-    <Modal
+    <Drawer
       open={open}
       title={initialValues ? 'Edit Specialist' : 'Add New Specialist'}
-      okText={initialValues ? 'Update' : 'Create'}
-      cancelText="Cancel"
-      onCancel={onCancel}
-      onOk={handleOk}
+      onClose={onCancel}
+      width={400}
+      placement="right"
+      extra={
+        <Space>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={handleSubmit} type="primary">
+            {initialValues ? 'Update' : 'Create'}
+          </Button>
+        </Space>
+      }
     >
       <Form
         form={form}
@@ -90,6 +97,6 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
           <Switch />
         </Form.Item>
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
