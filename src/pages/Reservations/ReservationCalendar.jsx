@@ -62,21 +62,11 @@ const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
     if (selectedStaffId) {
       mapped = mapped.filter(s => s.id === selectedStaffId);
     }
-    const resources = mapped.map(s => ({
+    return mapped.map(s => ({
       resourceId: s.id,
       resourceTitle: `${s.firstName} ${s.lastName}`
     }));
-
-    const hasUnassigned = events.some(e => !e.resourceId || !resources.find(r => r.resourceId === e.resourceId));
-    if (hasUnassigned && !selectedStaffId) {
-      resources.push({
-        resourceId: null,
-        resourceTitle: 'Unassigned',
-      });
-    }
-
-    return resources;
-  }, [staffList, events, selectedStaffId]);
+  }, [staffList, selectedStaffId]);
 
   const handleSelectEvent = (event) => {
     if (onEventClick) {
