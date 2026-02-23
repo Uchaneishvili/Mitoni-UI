@@ -12,9 +12,6 @@ export const useCreateStaff = () => {
     onSuccess: () => {
       message.success('Specialist created successfully');
       queryClient.invalidateQueries({ queryKey: [STAFF_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to create specialist');
     }
   });
 };
@@ -27,9 +24,6 @@ export const useUpdateStaff = () => {
     onSuccess: () => {
       message.success('Specialist updated successfully');
       queryClient.invalidateQueries({ queryKey: [STAFF_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to update specialist');
     }
   });
 };
@@ -42,9 +36,6 @@ export const useDeleteStaff = () => {
     onSuccess: () => {
       message.success('Specialist deleted successfully');
       queryClient.invalidateQueries({ queryKey: [STAFF_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to delete specialist');
     }
   });
 };

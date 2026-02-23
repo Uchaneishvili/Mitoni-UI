@@ -12,9 +12,6 @@ export const useCreateService = () => {
     onSuccess: () => {
       message.success('Service created successfully');
       queryClient.invalidateQueries({ queryKey: [SERVICES_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to create service');
     }
   });
 };
@@ -27,9 +24,6 @@ export const useUpdateService = () => {
     onSuccess: () => {
       message.success('Service updated successfully');
       queryClient.invalidateQueries({ queryKey: [SERVICES_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to update service');
     }
   });
 };
@@ -42,9 +36,6 @@ export const useDeleteService = () => {
     onSuccess: () => {
       message.success('Service deactivated successfully');
       queryClient.invalidateQueries({ queryKey: [SERVICES_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to deactivate service');
     }
   });
 };

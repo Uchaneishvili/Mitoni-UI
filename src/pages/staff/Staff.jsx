@@ -20,20 +20,22 @@ const Staff = () => {
     deleteStaff(id);
   };
 
-  const handleCreateOrUpdate = (values) => {
+  const handleCreateOrUpdate = (values, { onError }) => {
     if (editingStaff) {
       updateStaff({ id: editingStaff.id, values }, {
         onSuccess: () => {
           setModalOpen(false);
           setEditingStaff(null);
-        }
+        },
+        onError
       });
     } else {
       createStaff(values, {
         onSuccess: () => {
           setModalOpen(false);
           setEditingStaff(null);
-        }
+        },
+        onError
       });
     }
   };

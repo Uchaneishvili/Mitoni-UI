@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Modal, Form, Input, Switch } from 'antd';
+import { handleBackendError } from '../../utils/errorHandler';
 
 export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
@@ -19,7 +20,9 @@ export const StaffModal = ({ open, onCancel, onSubmit, initialValues }) => {
     form
       .validateFields()
       .then((values) => {
-        onSubmit(values);
+        onSubmit(values, {
+          onError: (error) => handleBackendError(error, form),
+        });
       })
       .catch((info) => {
         console.log('Validate Failed:', info);

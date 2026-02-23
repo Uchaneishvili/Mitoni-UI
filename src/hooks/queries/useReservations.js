@@ -12,9 +12,6 @@ export const useCreateReservation = () => {
     onSuccess: () => {
       message.success('Reservation created successfully');
       queryClient.invalidateQueries({ queryKey: [RESERVATION_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to create reservation');
     }
   });
 };
@@ -27,9 +24,6 @@ export const useUpdateReservation = () => {
     onSuccess: () => {
       message.success('Reservation updated successfully');
       queryClient.invalidateQueries({ queryKey: [RESERVATION_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to update reservation');
     }
   });
 };
@@ -42,9 +36,6 @@ export const useUpdateReservationStatus = () => {
     onSuccess: () => {
       message.success('Reservation status updated');
       queryClient.invalidateQueries({ queryKey: [RESERVATION_QUERY_KEY] });
-    },
-    onError: () => {
-      message.error('Failed to update reservation status');
     }
   });
 };

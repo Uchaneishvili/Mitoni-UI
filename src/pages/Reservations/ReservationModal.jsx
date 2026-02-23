@@ -5,6 +5,7 @@ import { useCreateReservation, useUpdateReservation } from '../../hooks/queries/
 import { staffService } from '../../services/staffService';
 import { servicesService } from '../../services/servicesService';
 import { AsyncSelect } from '../../components/common/AsyncSelect';
+import { handleBackendError } from '../../utils/errorHandler';
 
 const ReservationModal = ({ open, initialValues, onCancel }) => {
   const [form] = Form.useForm();
@@ -34,11 +35,13 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
 
       if (initialValues) {
         updateRes({ id: initialValues.id, values: formattedValues }, {
-          onSuccess: onCancel
+          onSuccess: onCancel,
+          onError: (error) => handleBackendError(error, form)
         });
       } else {
         createRes(formattedValues, {
-          onSuccess: onCancel
+          onSuccess: onCancel,
+          onError: (error) => handleBackendError(error, form)
         });
       }
     } catch (error) {

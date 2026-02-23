@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Modal, Form, Input, InputNumber, Switch } from 'antd';
 import { useCreateService, useUpdateService } from '../../hooks/queries/useServices';
+import { handleBackendError } from '../../utils/errorHandler';
 
 const ServiceModal = ({ open, initialValues, onCancel }) => {
   const [form] = Form.useForm();
@@ -24,10 +25,16 @@ const ServiceModal = ({ open, initialValues, onCancel }) => {
       if (initialValues) {
         updateService(
           { id: initialValues.id, values },
-          { onSuccess: onCancel }
+          { 
+            onSuccess: onCancel,
+            onError: (error) => handleBackendError(error, form)
+          }
         );
       } else {
-        createService(values, { onSuccess: onCancel });
+        createService(values, { 
+          onSuccess: onCancel,
+          onError: (error) => handleBackendError(error, form)
+        });
       }
     } catch (error) {
       console.error('Validation Failed:', error);
