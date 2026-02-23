@@ -35,7 +35,7 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
         startTime: values.startTime ? values.startTime.toISOString() : null,
       };
 
-      if (initialValues) {
+      if (initialValues?.id) {
         updateRes({ id: initialValues.id, values: formattedValues }, {
           onSuccess: onCancel,
           onError: (error) => handleBackendError(error, form)
@@ -76,7 +76,7 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
 
   return (
     <Drawer
-      title={initialValues ? 'Edit Reservation' : 'New Reservation'}
+      title={initialValues?.id ? 'Edit Reservation' : 'New Reservation'}
       open={open}
       onClose={onCancel}
       width={450}
@@ -91,7 +91,7 @@ const ReservationModal = ({ open, initialValues, onCancel }) => {
         </Space>
       }
     >
-      {initialValues && (
+      {initialValues?.id && (
         <div style={{ marginBottom: 24, padding: '12px', background: '#f5f5f5', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontWeight: 500 }}>Reservation Status: <strong style={{ color: initialValues.status === 'CONFIRMED' ? brandColors.success : initialValues.status === 'CANCELLED' ? brandColors.error : brandColors.warning }}>{initialValues.status}</strong></span>
           <Space>

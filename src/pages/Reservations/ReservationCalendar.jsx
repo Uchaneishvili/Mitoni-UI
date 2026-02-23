@@ -108,7 +108,8 @@ const ReservationCalendar = ({ onEventClick, onDateSelect }) => {
       height: '100%',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap', 
+      whiteSpace: 'normal', 
+      wordBreak: 'break-word',
       fontSize: '11px',
       padding: '2px', 
     }}>

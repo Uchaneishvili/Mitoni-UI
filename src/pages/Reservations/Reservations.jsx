@@ -80,13 +80,11 @@ const Reservations = () => {
       render: (status) => {
         if (status === 'PENDING') return <Tag color={statusColors.PENDING} style={{ borderRadius: '12px', padding: '0 12px' }} bordered={false}><span className="ant-badge-status-dot ant-badge-status-warning" style={{ marginRight: 6 }}></span>{status}</Tag>;
         if (status === 'CONFIRMED') return <Tag color={statusColors.CONFIRMED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
-        if (status === 'COMPLETED') return <Tag color={statusColors.COMPLETED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
         return <Tag color={statusColors.CANCELLED} style={{ borderRadius: '12px', padding: '0 12px' }}>{status}</Tag>;
       },
       filters: [
         { text: 'Pending', value: 'PENDING' },
         { text: 'Confirmed', value: 'CONFIRMED' },
-        { text: 'Completed', value: 'COMPLETED' },
         { text: 'Cancelled', value: 'CANCELLED' },
       ],
     },

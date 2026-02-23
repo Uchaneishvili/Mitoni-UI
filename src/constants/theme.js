@@ -12,13 +12,11 @@ export const brandColors = {
 export const statusColors = {
   PENDING: brandColors.warning,
   CONFIRMED: brandColors.primary,
-  COMPLETED: brandColors.success,
   CANCELLED: brandColors.error,
 };
 
 export const statusTagColors = {
   PENDING: 'warning',
   CONFIRMED: 'processing',
-  COMPLETED: 'success',
   CANCELLED: 'error',
 };
