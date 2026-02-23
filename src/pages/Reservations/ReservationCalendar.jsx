@@ -4,9 +4,15 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useQuery } from '@tanstack/react-query';
 import { Card, Spin, Space, Typography, message } from 'antd';
 import dayjs from 'dayjs';
+import updateLocale from 'dayjs/plugin/updateLocale';
 import { reservationService } from '../../services/reservationService';
 import { staffService } from '../../services/staffService';
 import { AsyncSelect } from '../../components/common/AsyncSelect';
+
+dayjs.extend(updateLocale);
+dayjs.updateLocale('en', {
+  weekStart: 1,
+});
 
 const localizer = dayjsLocalizer(dayjs);
 const { Text } = Typography;
