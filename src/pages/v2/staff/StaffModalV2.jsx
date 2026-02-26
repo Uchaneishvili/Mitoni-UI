@@ -17,13 +17,13 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
           lastName: initialValues.lastName,
         });
         
-        if (initialValues.photoUrl) {
+        if (initialValues.avatarUrl) {
            setFileList([
             {
               uid: '-1',
               name: 'profile-photo.png',
               status: 'done',
-              url: initialValues.photoUrl,
+              url: initialValues.avatarUrl,
             },
           ]);
         } else {
@@ -40,27 +40,35 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
     try {
       const values = await form.validateFields();
       let finalValues = { ...values };
-      const fileToUpload = fileList.find(f => f.originFileObj);
+    
+      const fileRecord = fileList.length > 0 ? fileList[0] : null;
+      const actualFile = fileRecord?.originFileObj || (fileRecord && !fileRecord.url ? fileRecord : null);
 
-      if (fileToUpload) {
+      if (actualFile) {
          setUploading(true);
          try {
            const formData = new FormData();
-           formData.append('file', fileToUpload.originFileObj);
+           formData.append('file', actualFile);
            const uploadResponse = await RequestHelper.client.post('/media/upload', formData, {
              headers: { 'Content-Type': 'multipart/form-data' }
            });
            
-           if (uploadResponse?.id || uploadResponse?.data?.id) {
-             finalValues.photoId = uploadResponse.id || uploadResponse.data.id;
+           const responseData = uploadResponse?.data?.data || uploadResponse?.data || uploadResponse;
+           
+           if (responseData?.url) {
+             finalValues.avatarUrl = responseData.url;
            }
          } catch (error) {
            message.error('Failed to upload photo');
+           setUploading(false);
+           return;
          } finally {
            setUploading(false);
          }
-      } else if (fileList.length === 0) {
-        finalValues.photoId = null; 
+      } else if (fileList.length > 0 && fileList[0].url) {
+        finalValues.avatarUrl = fileList[0].url;
+      } else {
+        finalValues.avatarUrl = null; 
       }
 
       onSubmit(finalValues, {
@@ -79,8 +87,13 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([file]); 
-      return false; 
+      setFileList([{
+        uid: file.uid,
+        name: file.name,
+        status: 'done',
+        originFileObj: file,
+      }]); 
+      return false;
     },
     fileList,
     maxCount: 1,

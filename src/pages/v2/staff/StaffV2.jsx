@@ -123,13 +123,13 @@ const StaffV2 = () => {
                   <Space size={16}>
                     <Avatar 
                       size={44}
-                      src={staff.photoUrl}
+                      src={staff.avatarUrl}
                       style={{ 
                         backgroundColor: '#f5f5f5', 
                         border: '1px solid #eeeeee' 
                       }}
                     >
-                      <div style={{ fontSize: '16px', fontWeight: 500, color: '#333' }}>{staff.firstName.charAt(0)}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 500, color: '#333' }}>{staff.firstName?.charAt(0)}</div>
                     </Avatar>
                     <span style={{ fontWeight: 500, fontSize: '15px', color: '#333' }}>
                       {staff.firstName} {staff.lastName}
