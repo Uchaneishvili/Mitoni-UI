@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard';
 import { APP_ROUTES } from '../config/navigation';
 import Staff from '../pages/staff/Staff';
 import StaffV2 from '../pages/v2/staff/StaffV2';
+import ServicesV2 from '../pages/v2/services/ServicesV2';
 import Services from '../pages/Services/Services';
 import Reservations from '../pages/Reservations/Reservations';
 
@@ -21,6 +22,7 @@ const AppRoutes = () => {
 
       <Route path="/v2" element={<V2Layout />}>
         <Route path="staff" element={<StaffV2 />} />
+        <Route path="services" element={<ServicesV2 />} />
       </Route>
     </Routes>
   );

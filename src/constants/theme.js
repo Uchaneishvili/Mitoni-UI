@@ -20,3 +20,13 @@ export const statusTagColors = {
   CONFIRMED: 'processing',
   CANCELLED: 'error',
 };
+
+
+export const COLORS = [
+  '#1677ff', // blue
+  '#52c41a', // green
+  '#13c2c2', // cyan
+  '#eb2f96', // pink
+  '#fa541c', // orange
+  '#f5222d', // red
+];
