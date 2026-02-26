@@ -10,6 +10,7 @@ export const APP_ROUTES = {
   RESERVATIONS: '/reservations',
   STAFF: '/staff',
   SERVICES: '/services',
+  STAFF_V2: '/v2/staff',
 };
 
 export const NAVIGATION_MENU = [
