@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 import { staffService } from '../../../services/staffService';
 import { reservationService } from '../../../services/reservationService';
-import { useCreateReservation, useUpdateReservation, useDeleteReservation } from '../../../hooks/queries/useReservations';
+import { useCreateReservation, useUpdateReservation, useUpdateReservationStatus } from '../../../hooks/queries/useReservations';
 import { ReservationModalV2 } from './ReservationModalV2';
 
 dayjs.extend(updateLocale);
@@ -46,7 +46,9 @@ const ScheduleV2 = () => {
 
   const events = useMemo(() => {
     const rawRes = resData?.data || [];
-    return rawRes.map(res => {
+    return rawRes
+      .filter(res => res.status !== 'CANCELLED')
+      .map(res => {
       const start = new Date(res.startTime);
       const end = res.endTime ? new Date(res.endTime) : dayjs(start).add(1, 'hour').toDate();
       
@@ -63,7 +65,7 @@ const ScheduleV2 = () => {
 
   const { mutate: createReservation, isPending: isCreating } = useCreateReservation();
   const { mutate: updateReservation, isPending: isUpdating } = useUpdateReservation();
-  const { mutate: deleteReservation, isPending: isDeleting } = useDeleteReservation();
+  const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateReservationStatus();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -111,7 +113,7 @@ const ScheduleV2 = () => {
   };
 
   const handleDelete = (id) => {
-    deleteReservation(id, {
+    updateStatus({ id, status: 'CANCELLED' }, {
       onSuccess: () => { setModalOpen(false); setSelectedEvent(null); }
     });
   };
@@ -267,7 +269,7 @@ const ScheduleV2 = () => {
         onSubmit={handleModalSubmit}
         onDelete={handleDelete}
         isSubmitting={isCreating || isUpdating}
-        isDeleting={isDeleting}
+        isDeleting={isUpdatingStatus}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Button, Space, Popconfirm, Spin, Table } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, DragOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, HolderOutlined, CloseOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
@@ -49,7 +49,7 @@ const BASE_COLUMNS = [
   {
     key: 'service',
     dataIndex: 'name',
-    title: <span style={{ color: '#8c8c8c', fontWeight: 500 }}><DragOutlined style={{ marginRight: 6 }}/>Service</span>,
+    title: <span style={{ color: '#8c8c8c', fontWeight: 500 }}><HolderOutlined style={{ marginRight: 6 }}/>Service</span>,
     render: (text, record) => (
       <Space size={12}>
         <div style={{ width: 16, height: 16, borderRadius: '50%', backgroundColor: record.color || '#1677ff' }} />
@@ -60,7 +60,7 @@ const BASE_COLUMNS = [
   {
     key: 'price',
     dataIndex: 'price',
-    title: <span style={{ color: '#8c8c8c', fontWeight: 500 }}><DragOutlined style={{ marginRight: 6 }}/>Price</span>,
+    title: <span style={{ color: '#8c8c8c', fontWeight: 500 }}><HolderOutlined style={{ marginRight: 6 }}/>Price</span>,
     render: (val) => <span style={{ color: '#1677ff', fontWeight: 500 }}>${Number(val).toFixed(2)}</span>,
   }
 ];
@@ -127,6 +127,16 @@ const ServicesV2 = () => {
     localStorage.setItem('mitoni_v2_column_order', JSON.stringify(newOrder));
   };
 
+  const handleDeleteColumn = (key) => {
+    const newCustomCols = customColumns.filter(c => c.key !== key);
+    setCustomColumns(newCustomCols);
+    localStorage.setItem('mitoni_v2_custom_columns', JSON.stringify(newCustomCols));
+    
+    const newOrder = columnOrder.filter(k => k !== key);
+    setColumnOrder(newOrder);
+    localStorage.setItem('mitoni_v2_column_order', JSON.stringify(newOrder));
+  };
+
   const handleDelete = (id) => {
     deleteService(id);
   };
@@ -174,7 +184,53 @@ const ServicesV2 = () => {
     columnsMap[col.key] = {
       key: col.key,
       dataIndex: col.key,
-      title: <span style={{ color: '#8c8c8c', fontWeight: 500 }}><DragOutlined style={{ marginRight: 6 }}/>{col.title}</span>,
+      title: (
+        <span style={{ display: 'flex', alignItems: 'center', color: '#8c8c8c', fontWeight: 500 }}>
+          <HolderOutlined style={{ marginRight: 6 }}/>
+          <span>{col.title}</span>
+          <div style={{ flex: 1 }} />
+          <Popconfirm
+            title="Remove column"
+            description="Are you sure you want to remove this column?"
+            onConfirm={(e) => { e.stopPropagation(); handleDeleteColumn(col.key); }}
+            onCancel={(e) => e.stopPropagation()}
+            okText="Yes"
+            cancelText="No"
+          >
+            <div
+              style={{
+                 width: '20px',
+                 height: '20px',
+                 borderRadius: '4px',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 backgroundColor: '#f5f5f5',
+                 color: '#bfbfbf',
+                 cursor: 'pointer',
+                 marginLeft: 8,
+                 transition: 'all 0.2s',
+                 border: '1px solid #e8e8e8'
+              }}
+              className="remove-col-btn"
+              onClick={(e) => e.stopPropagation()} 
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#ff4d4f';
+                e.currentTarget.style.borderColor = '#ff4d4f';
+                e.currentTarget.style.backgroundColor = '#fff2f0';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = '#bfbfbf';
+                e.currentTarget.style.borderColor = '#e8e8e8';
+                e.currentTarget.style.backgroundColor = '#f5f5f5';
+              }}
+            >
+              <CloseOutlined style={{ fontSize: '10px', strokeWidth: 1.5 }} />
+            </div>
+          </Popconfirm>
+        </span>
+      ),
       onHeaderCell: () => ({ id: col.key }),
       render: (val) => <span style={{ color: '#595959' }}>{val || '-'}</span>
     };
