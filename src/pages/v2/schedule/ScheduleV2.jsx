@@ -141,7 +141,9 @@ const ScheduleV2 = () => {
   };
 
   const eventStyleGetter = (event) => {
-    const bgColor = event.resource?.service?.color || '#1677ff';
+    const servicesNodes = event.resource?.services || [];
+    const firstService = servicesNodes.length > 0 ? servicesNodes[0].service : event.resource?.service;
+    const bgColor = firstService?.color || '#1677ff';
     
     return {
       style: {
@@ -158,17 +160,26 @@ const ScheduleV2 = () => {
   };
 
   const CustomEvent = ({ event }) => {
-    const mainService = event.resource?.service?.name || 'Service';
+    const servicesNodes = event.resource?.services || [];
+    const servicesList = servicesNodes.map(s => s.service).filter(Boolean);
+    if (!servicesList.length && event.resource?.service) {
+      servicesList.push(event.resource.service);
+    }
+    
+    const serviceNames = servicesList.length > 0 
+      ? servicesList.slice(0, 2).map(s => s.name).join(' & ') 
+      : 'Service';
+      
     const startTimeFormatted = dayjs(event.start).format('HH:mm');
     const endTimeFormatted = dayjs(event.end).format('HH:mm');
     const staffName = event.resource?.staff ? `${event.resource.staff.firstName} ${event.resource.staff.lastName?.charAt(0)}.` : 'Staff';
     
-    const color = event.resource?.service?.color || '#1677ff';
+    const color = servicesList[0]?.color || '#1677ff';
 
     return (
       <div style={{ padding: '4px', height: '100%', display: 'flex', flexDirection: 'column', fontSize: '12px' }}>
-        <div style={{ fontWeight: 600, color: color, marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-          {mainService}
+        <div style={{ fontWeight: 600, color: color, marginBottom: '4px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word', lineHeight: '1.2' }}>
+          {serviceNames}
         </div>
 
         <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#8c8c8c', fontSize: '11px' }}>

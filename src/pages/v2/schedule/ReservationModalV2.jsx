@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Modal, Form, Select, DatePicker, TimePicker, Button, Popconfirm, Spin, message, Space, Avatar } from 'antd';
+import { Modal, Form, Select, DatePicker, TimePicker, Button, Popconfirm, Spin, message, Space, Avatar, Input } from 'antd';
 import { CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useQuery } from '@tanstack/react-query';
@@ -48,7 +48,7 @@ export const ReservationModalV2 = ({
           date: startDayjs,
           time: startDayjs,
           duration: String(duration), 
-          serviceId: initialValues.serviceId || initialValues.service?.id || null,
+          serviceIds: initialValues.services?.map(s => s.serviceId) || (initialValues.serviceId ? [initialValues.serviceId] : []),
         });
       } else {
         form.resetFields();
@@ -61,16 +61,16 @@ export const ReservationModalV2 = ({
       const values = await form.validateFields();
       
       const staff = staffList.find(s => s.id === values.staffId);
-      if (staff) {
-        const providesService = Array.isArray(staff.services) 
-          ? staff.services.some(s => s.serviceId === values.serviceId) 
+      if (staff && values.serviceIds?.length) {
+        const providesAllServices = Array.isArray(staff.services) 
+          ? values.serviceIds.every(sid => staff.services.some(s => s.serviceId === sid))
           : true;
         
-        if (staff.isActive === false || !providesService) {
+        if (staff.isActive === false || !providesAllServices) {
           form.setFields([
             {
-              name: 'serviceId',
-              errors: ['Selected staff member does not provide this service or is inactive'],
+              name: 'serviceIds',
+              errors: ['Selected staff member does not provide all selected services or is inactive'],
             },
           ]);
           return; 
@@ -84,7 +84,7 @@ export const ReservationModalV2 = ({
 
       const finalPayload = {
         staffId: values.staffId,
-        serviceId: values.serviceId, 
+        serviceIds: values.serviceIds, 
         startTime: startTimeIso,
         endTime: endTimeIso,
         customerName: initialValues?.customerName || "Walk-in Client" 
@@ -98,14 +98,31 @@ export const ReservationModalV2 = ({
     }
   };
 
-  const selectedServiceId = Form.useWatch('serviceId', form);
+  const selectedServiceIds = Form.useWatch('serviceIds', form) || [];
   const selectedStaffId = Form.useWatch('staffId', form);
 
   const totalCost = useMemo(() => {
-    if (!servicesList.length || !selectedServiceId) return 0;
-    const srv = servicesList.find(s => s.id === selectedServiceId);
-    return srv ? Number(srv.price) : 0;
-  }, [selectedServiceId, servicesList]);
+    if (!servicesList.length || !selectedServiceIds.length) return 0;
+    return selectedServiceIds.reduce((sum, id) => {
+      const srv = servicesList.find(s => s.id === id);
+      return sum + (srv ? Number(srv.price) : 0);
+    }, 0);
+  }, [selectedServiceIds, servicesList]);
+
+  const totalDuration = useMemo(() => {
+    if (!servicesList.length || !selectedServiceIds.length) return 0;
+    return selectedServiceIds.reduce((sum, id) => {
+      const srv = servicesList.find(s => s.id === id);
+      const minutes = srv ? (Number(srv.durationTime) || Number(srv.durationMinutes) || Number(srv.duration) || 0) : 0;
+      return sum + minutes;
+    }, 0);
+  }, [selectedServiceIds, servicesList]);
+
+  useEffect(() => {
+    if (totalDuration > 0) {
+      form.setFieldValue('duration', String(totalDuration));
+    }
+  }, [totalDuration, form]);
 
   return (
     <Modal
@@ -198,25 +215,23 @@ export const ReservationModalV2 = ({
             style={{ flex: 1 }}
             rules={[{ required: true }]}
           >
-            <Select style={{ height: '42px' }}>
-              <Option value="15">15</Option>
-              <Option value="30">30</Option>
-              <Option value="45">45</Option>
-              <Option value="60">60</Option>
-              <Option value="90">90</Option>
-              <Option value="120">120</Option>
-            </Select>
+            <Input 
+              readOnly 
+              style={{ height: '42px', backgroundColor: '#fcfcfc', color: '#595959', border: '1px solid #e8e8e8' }} 
+              suffix={<span style={{ color: '#bfbfbf', fontSize: '12px', fontWeight: 500 }}>MIN</span>}
+            />
           </Form.Item>
         </div>
 
         <Form.Item
-          name="serviceId"
+          name="serviceIds"
           style={{ marginBottom: '16px' }}
-          rules={[{ required: true, message: 'Please select a service' }]}
+          rules={[{ required: true, message: 'Please select at least one service' }]}
         >
           <Select
-            placeholder="Search service"
-            style={{ width: '100%', height: '42px' }}
+            mode="multiple"
+            placeholder="Search and select services"
+            style={{ width: '100%', minHeight: '42px' }}
             loading={isServicesLoading}
             optionLabelProp="label"
             filterOption={(input, option) =>
@@ -238,8 +253,8 @@ export const ReservationModalV2 = ({
         </Form.Item>
 
         <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {selectedServiceId && (() => {
-            const srv = servicesList.find(s => s.id === selectedServiceId);
+          {selectedServiceIds.map(id => {
+            const srv = servicesList.find(s => s.id === id);
             if (!srv) return null;
             const bgHex = `${srv.color || '#1677ff'}15`; 
             return (
@@ -257,13 +272,14 @@ export const ReservationModalV2 = ({
                   <CloseOutlined 
                     style={{ color: '#8c8c8c', cursor: 'pointer', fontSize: '12px' }} 
                     onClick={() => {
-                        form.setFieldsValue({ serviceId: null });
+                        const newIds = selectedServiceIds.filter(sid => sid !== srv.id);
+                        form.setFieldsValue({ serviceIds: newIds });
                     }} 
                   />
                 </Space>
               </div>
             );
-          })()}
+          })}
         </div>
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '16px', marginBottom: '8px', borderTop: '1px solid #f0f0f0', paddingTop: '16px' }}>
