@@ -21,4 +21,8 @@ export const reservationService = {
     return RequestHelper.client.patch(`/reservations/${id}/status`, { status });
   },
 
+  delete: async (id) => {
+    return RequestHelper.client.delete(`/reservations/${id}`);
+  },
+
 };

@@ -35,9 +35,9 @@ const V2Layout = () => {
       
       <Content
         style={{
-          margin: '40px auto',
-          padding: '0 24px',
-          maxWidth: 760,
+          margin: location.pathname.includes('/v2/schedule') ? '0px' : '40px auto',
+          padding: location.pathname.includes('/v2/schedule') ? '0px' : '0 24px',
+          maxWidth: location.pathname.includes('/v2/schedule') ? '100%' : 760,
           width: '100%',
         }}
       >

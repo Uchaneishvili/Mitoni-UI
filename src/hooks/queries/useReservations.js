@@ -39,3 +39,15 @@ export const useUpdateReservationStatus = () => {
     }
   });
 };
+
+export const useDeleteReservation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id) => reservationService.delete(id),
+    onSuccess: () => {
+      message.success('Reservation deleted successfully');
+      queryClient.invalidateQueries({ queryKey: [RESERVATION_QUERY_KEY] });
+    }
+  });
+};

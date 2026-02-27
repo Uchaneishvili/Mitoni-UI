@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
-import { Modal, Form, Input, Button, Upload, message } from 'antd';
+import { Modal, Form, Input, Button, Upload, message, Select } from 'antd';
 import { handleBackendError } from '../../../utils/errorHandler';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import RequestHelper from '../../../utils/RequestHelper';
+import { useQuery } from '@tanstack/react-query';
+import { servicesService } from '../../../services/servicesService';
+
+const { Option } = Select;
 
 export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [uploading, setUploading] = useState(false);
+
+  const { data: servicesData, isLoading: isServicesLoading } = useQuery({
+    queryKey: ['services', 'staff_modal'],
+    queryFn: () => servicesService.getAll({ limit: 100 }),
+    enabled: open,
+  });
+
+  const servicesList = servicesData?.data || [];
 
   useEffect(() => {
     if (open) {
@@ -15,6 +27,7 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
         form.setFieldsValue({
           firstName: initialValues.firstName,
           lastName: initialValues.lastName,
+          serviceIds: initialValues.services ? initialValues.services.map(s => s.serviceId || s.id) : [],
         });
         
         if (initialValues.avatarUrl) {
@@ -177,9 +190,35 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
               name="lastName"
               label={<span style={{ fontWeight: 400, color: '#595959', fontSize: '14px' }}>Last Name</span>}
               rules={[{ required: true, message: 'Please input the last name!' }]}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: '16px' }}
             >
               <Input placeholder="Last Name" style={{ height: '40px', borderRadius: '4px' }} />
+            </Form.Item>
+
+            <Form.Item
+              name="serviceIds"
+              label={<span style={{ fontWeight: 400, color: '#595959', fontSize: '14px' }}>Provided Services</span>}
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Select services"
+                style={{ width: '100%', minHeight: '40px' }}
+                loading={isServicesLoading}
+                optionLabelProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {servicesList.map(srv => (
+                  <Option key={srv.id} value={srv.id} label={srv.name}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', backgroundColor: srv.color || '#1677ff', marginRight: 8 }}></span>
+                      {srv.name}
+                    </div>
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </div>
 

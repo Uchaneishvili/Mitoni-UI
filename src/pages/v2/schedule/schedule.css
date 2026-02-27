@@ -1,0 +1,76 @@
+.rbc-calendar {
+  border: none !important;
+  font-family: inherit;
+}
+
+.rbc-header {
+  border-bottom: 1px solid #EBEBEB !important;
+  border-left: 1px solid #EBEBEB !important;
+  border-top: none !important;
+  border-right: none !important;
+  background: #ffffff !important;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rbc-time-gutter {
+  border-right: none !important;
+  background: #ffffff;
+}
+
+.rbc-time-gutter .rbc-time-slot {
+  font-size: 13px;
+  color: #8c8c8c;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 12px;
+  align-items: flex-start;
+  border-top: none !important;
+  font-weight: 500;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid #F5F5F5 !important;
+}
+.rbc-timeslot-group {
+  border-bottom: 1px solid #EBEBEB !important;
+}
+
+.rbc-event {
+  padding: 0 !important;
+  border: none !important;
+  background-color: transparent !important;
+}
+
+.rbc-event-content {
+  height: 100%;
+}
+
+.rbc-current-time-indicator {
+  background-color: #f5222d !important;
+  height: 2px !important;
+}
+
+.rbc-current-time-indicator::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f5222d;
+}
+
+.rbc-allday-cell {
+  display: none !important;
+}
+.rbc-time-view .rbc-allday-panel {
+  display: none !important;
+}
+
+.rbc-event.rbc-selected {
+  outline: none !important;
+}

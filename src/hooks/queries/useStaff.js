@@ -8,7 +8,16 @@ export const useCreateStaff = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values) => staffService.create(values),
+    mutationFn: async (values) => {
+      const { serviceIds, ...staffData } = values;
+      const response = await staffService.create(staffData);
+      const newStaffId = response.data?.id || response.id;
+      
+      if (serviceIds && newStaffId) {
+        await staffService.assignServices(newStaffId, serviceIds);
+      }
+      return response;
+    },
     onSuccess: () => {
       message.success('Specialist created successfully');
       queryClient.invalidateQueries({ queryKey: [STAFF_QUERY_KEY] });
@@ -20,7 +29,15 @@ export const useUpdateStaff = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, values }) => staffService.update(id, values),
+    mutationFn: async ({ id, values }) => {
+      const { serviceIds, ...staffData } = values;
+      const response = await staffService.update(id, staffData);
+      
+      if (serviceIds) {
+        await staffService.assignServices(id, serviceIds);
+      }
+      return response;
+    },
     onSuccess: () => {
       message.success('Specialist updated successfully');
       queryClient.invalidateQueries({ queryKey: [STAFF_QUERY_KEY] });

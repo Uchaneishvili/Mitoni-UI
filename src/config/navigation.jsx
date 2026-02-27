@@ -12,6 +12,7 @@ export const APP_ROUTES = {
   SERVICES: '/services',
   STAFF_V2: '/v2/staff',
   SERVICES_V2: '/v2/services',
+  SCHEDULE_V2: '/v2/schedule',
 };
 
 export const NAVIGATION_MENU = [
