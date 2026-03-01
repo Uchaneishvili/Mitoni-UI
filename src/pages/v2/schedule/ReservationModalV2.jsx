@@ -140,26 +140,32 @@ export const ReservationModalV2 = ({
         <CloseOutlined style={{ color: '#8c8c8c', fontSize: '14px' }} />
       }
       footer={
-        <div style={{ display: 'flex', gap: '16px', marginTop: '32px' }}>
-          <Button 
-            type="primary" 
-            onClick={handleSubmit} 
-            loading={isSubmitting}
-            style={{ flex: 1, height: '44px', borderRadius: '8px', fontSize: '15px', fontWeight: 600, boxShadow: 'none' }}
-          >
-            Save
-          </Button>
-          <Button 
-            onClick={onCancel}
-            style={{ flex: 1, height: '44px', borderRadius: '8px', color: '#1677ff', borderColor: '#e6f4ff', background: '#e6f4ff', fontSize: '15px', fontWeight: 600 }}
-          >
-            Cancel
-          </Button>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+            <span style={{ fontWeight: 600, fontSize: '15px', color: '#333' }}>Total: <span style={{ color: '#1677ff' }}>${totalCost.toFixed(2)}</span></span>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Button 
+              type="primary" 
+              onClick={handleSubmit} 
+              loading={isSubmitting}
+              style={{ flex: 1, height: '40px', borderRadius: '4px', fontSize: '14px', fontWeight: 500, boxShadow: 'none' }}
+            >
+              Save
+            </Button>
+            <Button 
+              onClick={onCancel}
+              style={{ flex: 1, height: '40px', borderRadius: '4px', color: '#1677ff', borderColor: '#1677ff', fontSize: '14px', fontWeight: 500 }}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       }
       styles={{
         header: { marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #f0f0f0' },
-        body: { paddingBottom: '0px' }
+        body: { paddingBottom: '0px' },
+        content: { padding: '24px' } // Adjusted padding for cleaner look
       }}
     >
       <Form
@@ -170,7 +176,7 @@ export const ReservationModalV2 = ({
       >
         <Form.Item
           name="staffId"
-          label={<span style={{ fontWeight: 500, color: '#8c8c8c', fontSize: '12px', textTransform: 'uppercase' }}>Name</span>}
+          label={<span style={{ fontWeight: 600, color: '#8c8c8c', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Name</span>}
           rules={[{ required: true, message: 'Select specialist' }]}
         >
           <Select 
@@ -180,11 +186,20 @@ export const ReservationModalV2 = ({
             optionLabelProp="label"
           >
             {staffList.map(staff => (
-              <Option key={staff.id} value={staff.id} label={`${staff.firstName} ${staff.lastName}`}>
-                <Space>
+              <Option 
+                key={staff.id} 
+                value={staff.id} 
+                label={
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Avatar size={24} src={staff.avatarUrl}>{staff.firstName.charAt(0)}</Avatar>
+                    <span>{`${staff.firstName} ${staff.lastName}`}</span>
+                  </div>
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Avatar size={24} src={staff.avatarUrl}>{staff.firstName.charAt(0)}</Avatar>
                   {`${staff.firstName} ${staff.lastName}`}
-                </Space>
+                </div>
               </Option>
             ))}
           </Select>
@@ -193,7 +208,7 @@ export const ReservationModalV2 = ({
         <div style={{ display: 'flex', gap: '16px' }}>
           <Form.Item
             name="date"
-            label={<span style={{ fontWeight: 500, color: '#8c8c8c', fontSize: '12px', textTransform: 'uppercase' }}>Date</span>}
+            label={<span style={{ fontWeight: 600, color: '#8c8c8c', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Date</span>}
             style={{ flex: 1 }}
             rules={[{ required: true }]}
           >
@@ -202,7 +217,7 @@ export const ReservationModalV2 = ({
 
           <Form.Item
             name="time"
-            label={<span style={{ fontWeight: 500, color: '#8c8c8c', fontSize: '12px', textTransform: 'uppercase' }}>Appt Time</span>}
+            label={<span style={{ fontWeight: 600, color: '#8c8c8c', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Appt Time</span>}
             style={{ flex: 1 }}
             rules={[{ required: true }]}
           >
@@ -211,7 +226,7 @@ export const ReservationModalV2 = ({
 
           <Form.Item
             name="duration"
-            label={<span style={{ fontWeight: 500, color: '#8c8c8c', fontSize: '12px', textTransform: 'uppercase' }}>Duration</span>}
+            label={<span style={{ fontWeight: 600, color: '#8c8c8c', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duration</span>}
             style={{ flex: 1 }}
             rules={[{ required: true }]}
           >
@@ -237,6 +252,7 @@ export const ReservationModalV2 = ({
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
+            // tagRender={() => null}
           >
             {servicesList.map(srv => (
               <Option key={srv.id} value={srv.id} label={srv.name}>
@@ -252,44 +268,56 @@ export const ReservationModalV2 = ({
           </Select>
         </Form.Item>
 
-        <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {selectedServiceIds.map(id => {
+        <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', borderRadius: '4px', overflow: 'hidden' }}>
+          {selectedServiceIds.map((id, index) => {
             const srv = servicesList.find(s => s.id === id);
             if (!srv) return null;
-            const bgHex = `${srv.color || '#1677ff'}15`; 
+            const bgHex = `${srv.color || '#1677ff'}20`; // Light background
+            const isLast = index === selectedServiceIds.length - 1;
+            
             return (
               <div key={srv.id} style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
-                padding: '12px 16px', 
                 background: bgHex, 
-                borderRadius: '6px',
-                alignItems: 'center'
+                alignItems: 'stretch', 
+                borderBottom: isLast ? 'none' : '2px solid #ffffff', // Thicker white separator
+                height: '40px'
               }}>
-                <span style={{ color: srv.color || '#1677ff', fontWeight: 500, fontSize: '13px' }}>{srv.name}</span>
-                <Space size="middle">
-                  <span style={{ color: srv.color || '#1677ff', fontWeight: 600, fontSize: '13px' }}>${Number(srv.price).toFixed(2)}</span>
-                  <CloseOutlined 
-                    style={{ color: '#8c8c8c', cursor: 'pointer', fontSize: '12px' }} 
+                <div style={{ display: 'flex', flex: 1, padding: '0 16px', alignItems: 'center' }}>
+                    <span style={{ color: srv.color || '#1677ff', fontWeight: 600, fontSize: '12px' }}>{srv.name}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <span style={{ color: '#333', fontWeight: 600, fontSize: '13px', marginRight: '16px' }}>${Number(srv.price).toFixed(2)}</span>
+                  <div 
+                    style={{ 
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '40px',
+                      cursor: 'pointer',
+                      height: '100%',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     onClick={() => {
                         const newIds = selectedServiceIds.filter(sid => sid !== srv.id);
                         form.setFieldsValue({ serviceIds: newIds });
                     }} 
-                  />
-                </Space>
+                  >
+                    <CloseOutlined style={{ color: '#333', fontSize: '12px', fontWeight: 'bold' }} />
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
         
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '16px', marginBottom: '8px', borderTop: '1px solid #f0f0f0', paddingTop: '16px' }}>
-          <span style={{ fontWeight: 600, fontSize: '16px', color: '#333' }}>Total: <span style={{ color: '#1677ff' }}>${totalCost.toFixed(2)}</span></span>
-        </div>
-
         {initialValues?.id && (
-          <div style={{ marginTop: '16px' }}>
+          <div style={{ marginTop: '0px' }}>
             <Popconfirm title="Delete this reservation?" onConfirm={() => onDelete(initialValues.id)}>
-              <Button danger type="text" icon={<DeleteOutlined />} loading={isDeleting}>Delete Reservation</Button>
+              <Button danger type="text" icon={<DeleteOutlined />} loading={isDeleting} style={{ padding: 0 }}>Delete Reservation</Button>
             </Popconfirm>
           </div>
         )}

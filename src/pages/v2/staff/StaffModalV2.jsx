@@ -223,7 +223,7 @@ export const StaffModalV2 = ({ open, onCancel, onSubmit, initialValues }) => {
           </div>
 
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ marginBottom: '8px', fontWeight: 400, color: '#595959', fontSize: '14px' }}>Photo (Optional)</div>
+            <div style={{ marginBottom: '8px', fontWeight: 400, color: '#595959', fontSize: '14px' }}>Photo</div>
             <div style={{ flex: 1, display: 'flex' }}>
               <div style={{ 
                 border: '1px dashed #1677ff', 
